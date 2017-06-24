@@ -15,6 +15,11 @@ namespace UnityEngine.XR.iOS
 		private IHoldActivatedUI m_holdActivatedUI;
 		private const int DUMMY_TOUCH_ID = 1;
 
+		void Start()
+		{
+			ArLabel.OnItemEditEnded += () => { SelectItem(null);};
+		}
+
 		public void RegisterHoldActivatedUI(IHoldActivatedUI holdUI)
 		{
 			m_holdActivatedUI = holdUI;

@@ -108,13 +108,18 @@ namespace UnityEngine.XR.iOS
 			//get anim speed up factor (no speedup if deselected)
 			{
 				if (m_selected)
-					animTimeFac = 1.0f/(1.0f + SmoothPosSpeedupRate * (Time.time - m_selectedTime));
+				{
+					var t = (Time.time - m_selectedTime);
+					t = (t + 1.0f);	
+					t *= t;
+					animTimeFac = SmoothPosSpeedupRate * t;
+				}
 			}
 
 			if (m_selected)
-				transform.rotation = Quaternion.Slerp(transform.rotation, targetRot, Mathf.Clamp01(RotSmooth * Time.deltaTime));
+				transform.rotation = Quaternion.Slerp(transform.rotation, targetRot, Mathf.Clamp01(RotSmooth * animTimeFac * Time.deltaTime));
 //				transform.rotation = QuaternionUtil.SmoothDamp(transform.rotation, camTrans.rotation, ref m_animDeriv, SmoothPosTime * animTimeFac);
-			transform.position = Vector3.Lerp(transform.position, target, Mathf.Clamp01(SmoothPosTime * Time.deltaTime));
+			transform.position = Vector3.Lerp(transform.position, target, Mathf.Clamp01(SmoothPosTime * RotSmooth * animTimeFac * Time.deltaTime));
 
 			//Fix to camera once reached
 			{
