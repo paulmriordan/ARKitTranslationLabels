@@ -9,7 +9,8 @@
 public class LookAtTarget : MonoBehaviour
 {
 	public int level = 0;
-	public Transform target;
+	[SerializeField] Transform target;
+	[SerializeField] Vector3 targetOffset;
 	public float speed = 8f;
 
 	Transform mTrans;
@@ -21,11 +22,16 @@ public class LookAtTarget : MonoBehaviour
 			target = Camera.main.transform;
 	}
 
+	public void SetTargetOffset(Vector3 offset)
+	{
+		targetOffset = offset;
+	}
+
 	void LateUpdate ()
 	{
 		if (target != null)
 		{
-			Vector3 dir = target.position - mTrans.position;
+			Vector3 dir = (target.position + targetOffset) - mTrans.position;
 			float mag = dir.magnitude;
 
 			if (mag > 0.001f)

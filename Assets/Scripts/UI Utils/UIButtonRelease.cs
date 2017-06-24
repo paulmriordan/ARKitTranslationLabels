@@ -24,6 +24,8 @@ public class UIButtonRelease : MonoBehaviour, IPointerDownHandler, IPointerUpHan
 
 	public void OnPointerExit(PointerEventData eventData)
 	{
+		if (m_entered && !Input.GetMouseButton(0))
+			onReleasedOver.Invoke();
 		m_entered = false;
 		Debug.Log("Exit");
 	}
@@ -38,6 +40,7 @@ public class UIButtonRelease : MonoBehaviour, IPointerDownHandler, IPointerUpHan
 	{
 		if (!Input.GetMouseButton(0) && m_entered)
 		{
+			Debug.Log("Released over");
 			onReleasedOver.Invoke();
 			m_entered = false;
 		}

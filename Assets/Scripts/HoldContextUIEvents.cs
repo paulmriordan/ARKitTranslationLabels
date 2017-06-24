@@ -9,13 +9,13 @@ namespace UnityEngine.XR.iOS
 
 		public void CreateNewLabel()
 		{
-			LabelManager.Instance.AddLabel(transform.position, transform.rotation);
+			Debug.Log("Create new label at" + transform.position);
+			var newLabel = LabelManager.Instance.AddLabel(transform.position, transform.rotation);
+			newLabel.StartEditing();
 		}
 
 		public void MoveLabel()
 		{
 		}
-
-
 	}
 }

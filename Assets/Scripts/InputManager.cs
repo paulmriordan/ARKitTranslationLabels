@@ -5,20 +5,15 @@ using UnityEngine.EventSystems;
 
 namespace UnityEngine.XR.iOS
 {
-	public interface ISelectable
-	{
-		void Select();
-		void Deselect();
-		GameObject GetGameObject();
-	}
-
 	public class InputManager : MonoSingleton<InputManager> 
 	{
 		public event System.Action<ISelectable> OnItemSelected;
 
 		public ISelectable m_SelectedObject;
 
+		private HashSet<int> m_fingerDownCanvas = new HashSet<int>();
 		private IHoldActivatedUI m_holdActivatedUI;
+		private const int DUMMY_TOUCH_ID = 1;
 
 		public void RegisterHoldActivatedUI(IHoldActivatedUI holdUI)
 		{
@@ -40,6 +35,16 @@ namespace UnityEngine.XR.iOS
 			OnItemSelected(m_SelectedObject);
 		}
 
+		bool IsConsumedByCanvas()
+		{
+#if UNITY_EDITOR
+			return EventSystem.current.IsPointerOverGameObject();
+#else
+
+			return Input.touchCount > 0 && EventSystem.current.IsPointerOverGameObject(Input.GetTouch(0).fingerId);
+#endif
+		}
+
 		// Update is called once per frame
 		void Update () 
 		{
@@ -59,9 +64,11 @@ namespace UnityEngine.XR.iOS
 
 		void FingerDown()
 		{
-
-			if (EventSystem.current.IsPointerOverGameObject())
+			if (IsConsumedByCanvas())
+			{
+				m_fingerDownCanvas.Add(DUMMY_TOUCH_ID);
 				return;
+			}
 
 #if UNITY_EDITOR
 			Plane p = new Plane(new Vector3(0,0,1.0f), new Vector3(0,0,-3.21f));
@@ -95,8 +102,11 @@ namespace UnityEngine.XR.iOS
 		{
 			m_holdActivatedUI.Remove();
 
-			if (EventSystem.current.IsPointerOverGameObject())
+			if (IsConsumedByCanvas() || m_fingerDownCanvas.Contains(DUMMY_TOUCH_ID))
+			{
+				m_fingerDownCanvas.Remove(DUMMY_TOUCH_ID);
 				return;
+			}
 			
 			// Try select existing label
 			RaycastHit hitInfo;

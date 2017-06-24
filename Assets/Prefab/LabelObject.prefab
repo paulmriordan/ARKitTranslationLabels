@@ -179,6 +179,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   level: 0
   target: {fileID: 0}
+  targetOffset: {x: 0, y: 0, z: 0}
   speed: 8
 --- !u!114 &114675028274458900
 MonoBehaviour:
@@ -260,7 +261,7 @@ MonoBehaviour:
   m_CaretColor: {r: 0.19607843, g: 0.19607843, b: 0.19607843, a: 1}
   m_CustomCaretColor: 0
   m_SelectionColor: {r: 0.65882355, g: 0.80784315, b: 1, a: 0.7529412}
-  m_Text: Hello World
+  m_Text: '[New Label]'
   m_CaretBlinkRate: 0.85
   m_CaretWidth: 1
   m_ReadOnly: 0
@@ -276,6 +277,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Image: {fileID: 114020680944167570}
+  m_InputField: {fileID: 114677437378656344}
+  SelectedColor: {r: 0, g: 0, b: 1, a: 1}
+  UnSelectedColor: {r: 1, g: 1, b: 1, a: 1}
+  SmoothPosTime: 10
+  SmoothPosSpeedupRate: 5
+  RotSmooth: 10
+  SelectedOffset: {x: 0, y: 0.3, z: 1}
 --- !u!114 &114870094519018844
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -308,7 +316,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 1
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: Hello World
+  m_Text: '[New Label]'
 --- !u!222 &222219019591706652
 CanvasRenderer:
   m_ObjectHideFlags: 1

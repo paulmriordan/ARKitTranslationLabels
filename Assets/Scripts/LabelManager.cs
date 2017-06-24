@@ -8,10 +8,11 @@ namespace UnityEngine.XR.iOS
 
 		public GameObject LabelPrefab;
 
-		public void AddLabel(Vector3 pos, Quaternion rot)
+		public ArLabel AddLabel(Vector3 pos, Quaternion rot)
 		{
-			var item = GameObject.Instantiate(LabelPrefab, pos, rot, transform);
+			var item = GameObject.Instantiate(LabelPrefab, pos, rot, transform).GetComponent<ArLabel>();
 			InputManager.Instance.SelectItem(item.GetComponent<ISelectable>());
+			return item;
 		}
 
 		public void RemoveLabel(GameObject toRemove)
