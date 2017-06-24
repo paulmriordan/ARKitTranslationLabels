@@ -26,6 +26,7 @@ namespace UnityEngine.XR.iOS
 		{
 			InputManager.Instance.OnItemSelected += ObjectSelected;
 			ArLabel.OnItemEditBegun += () => {ChangeState(E_State.Editing);};
+			ArLabel.OnItemEditEnded += () => {ChangeState(E_State.Selected);};
 		}
 
 		void ObjectSelected(ISelectable obj)

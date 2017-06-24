@@ -21,6 +21,7 @@ namespace UnityEngine.XR.iOS
 	public class ArLabel : MonoBehaviour, ISelectable, IEditable 
 	{
 		public static event System.Action OnItemEditBegun;
+		public static event System.Action OnItemEditEnded;
 
 		public Image Image;
 		public InputField m_InputField;
@@ -44,6 +45,7 @@ namespace UnityEngine.XR.iOS
 			m_gObj = gameObject;
 			m_position = m_gObj.transform.position;
 			m_lookAtTarget = GetComponent<LookAtTarget>();
+			m_InputField.onEndEdit.AddListener(EditingEnded);
 		}
 
 		public GameObject GetGameObject() 
@@ -75,6 +77,11 @@ namespace UnityEngine.XR.iOS
 			m_InputField.Select();
 			m_InputField.ActivateInputField();
 			OnItemEditBegun();
+		}
+
+		void EditingEnded(string userInput)
+		{
+			OnItemEditEnded();
 		}
 
 		void Update()
