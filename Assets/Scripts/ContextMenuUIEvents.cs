@@ -5,7 +5,9 @@ using UnityEngine.UI;
 
 namespace UnityEngine.XR.iOS
 {
-	public class ContextMenuUIEvents : MonoBehaviour {
+	public class ContextMenuUIEvents : MonoBehaviour 
+	{
+		public GameObject[] DebugContainers;
 
 		public event System.Action OnItemMoveRequested = () => {};
 		public event System.Action OnItemMoveFinished = () => {};
@@ -74,6 +76,12 @@ namespace UnityEngine.XR.iOS
 				InputManager.Instance.SelectItem(null);
 				break;
 			}
+		}
+
+		public void DebugClicked()
+		{
+			foreach (var d in DebugContainers)
+				d.SetActive(!d.activeSelf);
 		}
 
 	}

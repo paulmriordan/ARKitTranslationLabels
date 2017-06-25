@@ -8,17 +8,19 @@ namespace UnityEngine.XR.iOS
 		private MeshCollider meshCollider; //declared to avoid code stripping of class
 		private MeshFilter meshFilter; //declared to avoid code stripping of class
 		private static GameObject planePrefab = null;
+		private static Transform planeParent = null;
 
-		public static void InitializePlanePrefab(GameObject go)
+		public static void InitializePlanePrefab(GameObject go, Transform parent)
 		{
 			planePrefab = go;
+			planeParent = parent;
 		}
 		
 		public static GameObject CreatePlaneInScene(ARPlaneAnchor arPlaneAnchor)
 		{
 			GameObject plane;
 			if (planePrefab != null) {
-				plane = GameObject.Instantiate(planePrefab);
+				plane = GameObject.Instantiate(planePrefab, planeParent);
 			} else {
 				plane = new GameObject (); //put in a blank gameObject to get at least a transform to manipulate
 			}

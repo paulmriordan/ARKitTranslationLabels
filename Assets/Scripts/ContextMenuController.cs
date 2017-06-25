@@ -22,6 +22,7 @@ namespace UnityEngine.XR.iOS
 		public Button m_DeleteButton;
 		public Button m_DoneButton;
 		public Button m_CancelButton;
+		public Button m_ShowDebug;
 		public static string[] Languages = {"English", "Spanish", "French"};
 		public static string[] LanguageCodes = {"en", "es", "fr"};
 
@@ -66,6 +67,7 @@ namespace UnityEngine.XR.iOS
 		{
 			bool create = state == E_State.Unselected;
 			bool language = state == E_State.Unselected;
+			bool debug = state == E_State.Unselected;
 			bool edit = state == E_State.Selected;
 			bool move = state == E_State.Selected;
 			bool delete = state == E_State.Selected;
@@ -74,6 +76,7 @@ namespace UnityEngine.XR.iOS
 
 			m_CreateButton.gameObject.SetActive(create);
 			m_LanguageButton.gameObject.SetActive(language);
+			m_ShowDebug.gameObject.SetActive(debug);
 			m_EditButton.gameObject.SetActive(edit);
 			m_MoveButton.gameObject.SetActive(move);
 			m_DeleteButton.gameObject.SetActive(delete);

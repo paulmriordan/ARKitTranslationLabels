@@ -20,7 +20,7 @@ public class UnityPointCloudExample : MonoBehaviour
             pointCloudObjects = new List<GameObject> ();
             for (int i =0; i < numPointsToShow; i++)
             {
-                pointCloudObjects.Add (Instantiate (PointCloudPrefab));
+				pointCloudObjects.Add (Instantiate (PointCloudPrefab, transform));
             }
         }
     }
