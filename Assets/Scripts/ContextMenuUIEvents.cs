@@ -22,6 +22,7 @@ namespace UnityEngine.XR.iOS
 		public void LanguageClicked()
 		{
 			m_MenuController.ToggleLanguage();
+			LabelManager.Instance.TranslateAll(ContextMenuController.GetActiveLanguageCode());
 		}
 
 		public void EditClicked()

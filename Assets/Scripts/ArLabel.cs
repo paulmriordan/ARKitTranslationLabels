@@ -47,6 +47,7 @@ namespace UnityEngine.XR.iOS
 		private Vector3 m_position;
 		private LookAtTarget m_lookAtTarget;
 		private float m_selectedTime = float.MaxValue;
+		private Dictionary<string, string> m_translations = new Dictionary<string, string>();
 
 		public bool IsNew {get; set;}
 
@@ -85,6 +86,9 @@ namespace UnityEngine.XR.iOS
 
 		public void StartEditing()
 		{
+			string txt;
+			m_translations.TryGetValue("en", out txt);
+			m_InputField.text = txt;
 			m_InputField.Select();
 			m_InputField.ActivateInputField();
 			OnItemEditBegun();
@@ -103,10 +107,34 @@ namespace UnityEngine.XR.iOS
 			transform.localRotation = Quaternion.Euler(0, 180.0f, 0);
 		}
 
+		public string GetText(string langCode)
+		{
+			string val;
+			m_translations.TryGetValue(langCode, out val);
+			return val;
+		}
+
+		public void SetText(string langCode, string value)
+		{
+			m_translations[langCode] = value;
+		}
+
+		public void UpdateActiveTranslation()
+		{
+			var activeLang = ContextMenuController.GetActiveLanguageCode();
+			string val;
+			if (m_translations.TryGetValue(activeLang, out val))
+				m_InputField.text = val;
+		}
+
 		void EditingEnded(string userInput)
 		{
 			if (!m_InputField.wasCanceled)
 			{
+				m_translations["en"] = userInput;
+				//TODO: should request new translation here
+				UpdateActiveTranslation();
+
 				if (IsNew)
 					OnNewItemEditEnded();
 				else

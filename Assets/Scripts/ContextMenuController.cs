@@ -22,9 +22,10 @@ namespace UnityEngine.XR.iOS
 		public Button m_DeleteButton;
 		public Button m_DoneButton;
 		public Button m_CancelButton;
-		public string[] Languages = {"English", "Spanish", "French"};
+		public static string[] Languages = {"English", "Spanish", "French"};
+		public static string[] LanguageCodes = {"en", "es", "fr"};
 
-		private int m_currentLanguage = 0;
+		private static int m_currentLanguage = 0;
 
 		public ContextMenuUIEvents m_UIEvents;
 		public E_State ActiveState {get; private set;}
@@ -44,6 +45,12 @@ namespace UnityEngine.XR.iOS
 			m_currentLanguage = (m_currentLanguage + 1)%Languages.Length;
 			var txt = m_LanguageButton.GetComponentInChildren<Text>(true);
 			txt.text = Languages[m_currentLanguage];
+		}
+
+		//TODO: refactor language away from here
+		public static string GetActiveLanguageCode()
+		{
+			return LanguageCodes[m_currentLanguage];
 		}
 
 		void ObjectSelected(ISelectable obj)
