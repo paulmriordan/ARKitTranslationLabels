@@ -12,6 +12,7 @@ public class UIButtonRelease : MonoBehaviour, IPointerDownHandler, IPointerUpHan
 
 	public void OnPointerDown(PointerEventData eventData)
 	{
+		m_entered = true;
 		Debug.Log("Down");
 	}
 
@@ -32,6 +33,8 @@ public class UIButtonRelease : MonoBehaviour, IPointerDownHandler, IPointerUpHan
 
 	public void OnPointerUp(PointerEventData eventData)
 	{
+		if (m_entered && !Input.GetMouseButton(0))
+			onReleasedOver.Invoke();
 		m_entered = false;
 		Debug.Log("Up");
 	}

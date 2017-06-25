@@ -10,6 +10,10 @@ namespace UnityEngine.XR.iOS
 		public event System.Action<ISelectable> OnItemSelected;
 
 		public ISelectable m_SelectedObject;
+		public bool RemoveInWorldUIOnRelease = false;
+		public bool WorldUIInFrontOfCam = true;
+		public Vector3 WorldUIOffsetFromCam = new Vector3(0,0,1.0f);
+		public bool TapOnTapOffWorldUI = false;
 
 		private HashSet<int> m_fingerDownCanvas = new HashSet<int>();
 		private IHoldActivatedUI m_holdActivatedUI;
@@ -17,7 +21,7 @@ namespace UnityEngine.XR.iOS
 
 		void Start()
 		{
-			ArLabel.OnItemEditEnded += () => { SelectItem(null);};
+//			ArLabel.OnItemEditEnded += () => { SelectItem(null);};
 		}
 
 		public void RegisterHoldActivatedUI(IHoldActivatedUI holdUI)
@@ -50,7 +54,6 @@ namespace UnityEngine.XR.iOS
 #endif
 		}
 
-		// Update is called once per frame
 		void Update () 
 		{
 			if (Input.GetMouseButtonDown(0))
@@ -75,29 +78,49 @@ namespace UnityEngine.XR.iOS
 				return;
 			}
 
-#if UNITY_EDITOR
+			if (!WorldUIInFrontOfCam)
+				ShowWorldUIAtRaycastHitPoint();
+		}
+
+		void ShowWorldUIInFrontOfCamera()
+		{
+			var camTrans = Camera.main.transform;
+			var fwd = camTrans.forward.normalized;
+			var up = camTrans.up;
+			var pos = camTrans.position + fwd * WorldUIOffsetFromCam.z + up * WorldUIOffsetFromCam.y;
+			var rot = Quaternion.LookRotation(camTrans.position - pos);
+			if (m_holdActivatedUI != null)
+				m_holdActivatedUI.ShowRequest(pos, rot);
+		}
+
+		void ShowWorldUIAtRaycastHitPoint()
+		{
+			if (m_holdActivatedUI == null)
+				return;
+			
+			#if UNITY_EDITOR
 			Plane p = new Plane(new Vector3(0,0,1.0f), new Vector3(0,0,-3.21f));
 			var ray = Camera.main.ScreenPointToRay(Input.mousePosition);
 			float enter;
 			if (p.Raycast(ray, out enter))
 			{
-				m_holdActivatedUI.HoldBegun(ray.GetPoint(enter), Quaternion.identity);
+				m_holdActivatedUI.ShowRequest(ray.GetPoint(enter), Quaternion.identity);
 			}
-#else
+			#else
 			var viewportPoint = Camera.main.ScreenToViewportPoint(Input.mousePosition);
 			ARHitTestResult hitResult = default(ARHitTestResult);
 			if (ARHitTestUtils.GetBestARHitResult(viewportPoint, ref hitResult))
 			{
-				m_holdActivatedUI.HoldBegun(UnityARMatrixOps.GetPosition (hitResult.worldTransform), 
-										UnityARMatrixOps.GetRotation (hitResult.worldTransform));
+			m_holdActivatedUI.ShowRequest(UnityARMatrixOps.GetPosition (hitResult.worldTransform), 
+			UnityARMatrixOps.GetRotation (hitResult.worldTransform));
 
 			}
-#endif
+			#endif
 		}
 
 		void FingerHeld()
 		{
-			if (m_holdActivatedUI.IsActive)
+			if (RemoveInWorldUIOnRelease && m_holdActivatedUI != null && m_holdActivatedUI.IsActive)
 			{
 				SelectItem(null);
 			}	
@@ -105,7 +128,8 @@ namespace UnityEngine.XR.iOS
 
 		void FingerUp()
 		{
-			m_holdActivatedUI.Remove();
+			if (RemoveInWorldUIOnRelease && m_holdActivatedUI != null)
+				m_holdActivatedUI.Remove();
 
 			if (IsConsumedByCanvas() || m_fingerDownCanvas.Contains(DUMMY_TOUCH_ID))
 			{
@@ -117,11 +141,17 @@ namespace UnityEngine.XR.iOS
 			RaycastHit hitInfo;
 			if (Physics.Raycast(Camera.main.ScreenPointToRay(Input.mousePosition), out hitInfo, 1000.0f))
 			{
-				SelectItem(hitInfo.collider.gameObject.GetComponent<ISelectable>());
+				var selectable = hitInfo.collider.gameObject.GetComponent<ISelectable>();
+				if (m_SelectedObject == selectable)
+					SelectItem(null);
+				else
+					SelectItem(selectable);
 			}
 			else
 			{
 				SelectItem(null);
+				if (WorldUIInFrontOfCam)
+					ShowWorldUIInFrontOfCamera();
 			}
 		}
 	}

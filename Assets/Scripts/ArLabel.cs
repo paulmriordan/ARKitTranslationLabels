@@ -8,6 +8,8 @@ namespace UnityEngine.XR.iOS
 
 	public interface ISelectable
 	{
+		bool IsNew {get;}
+
 		void Select();
 		void Deselect();
 		GameObject GetGameObject();
@@ -18,10 +20,16 @@ namespace UnityEngine.XR.iOS
 		void StartEditing();
 	}
 
-	public class ArLabel : MonoBehaviour, ISelectable, IEditable 
+	public interface IPositionable
+	{
+		void SaveNewPosition(Vector3 pos);
+	}
+
+	public class ArLabel : MonoBehaviour, ISelectable, IEditable, IPositionable
 	{
 		public static event System.Action OnItemEditBegun;
 		public static event System.Action OnItemEditEnded;
+		public static event System.Action OnNewItemEditEnded;
 
 		public Image Image;
 		public InputField m_InputField;
@@ -39,6 +47,8 @@ namespace UnityEngine.XR.iOS
 		private Vector3 m_position;
 		private LookAtTarget m_lookAtTarget;
 		private float m_selectedTime = float.MaxValue;
+
+		public bool IsNew {get; set;}
 
 		void Awake()
 		{
@@ -70,6 +80,7 @@ namespace UnityEngine.XR.iOS
 			Image.color = UnSelectedColor;
 			m_selected = false;
 			m_selectedTime = float.MaxValue;
+			IsNew = false; //no longer just created, finish edit no longer goes to position
 		}
 
 		public void StartEditing()
@@ -79,9 +90,33 @@ namespace UnityEngine.XR.iOS
 			OnItemEditBegun();
 		}
 
+		public void SaveNewPosition(Vector3 pos)
+		{
+			m_position = pos;
+		}
+
+		public void ForceToSelectedView()
+		{
+			var camTrans = Camera.main.transform;
+			transform.SetParent(camTrans);
+			transform.position = GetSelectedPosition();
+			transform.localRotation = Quaternion.Euler(0, 180.0f, 0);
+		}
+
 		void EditingEnded(string userInput)
 		{
-			OnItemEditEnded();
+			if (!m_InputField.wasCanceled)
+			{
+				if (IsNew)
+					OnNewItemEditEnded();
+				else
+					OnItemEditEnded();
+			}
+			else
+			{
+				LabelManager.Instance.RemoveLabel(InputManager.Instance.m_SelectedObject.GetGameObject());
+				InputManager.Instance.m_SelectedObject = null;
+			}
 		}
 
 		void Update()
@@ -96,11 +131,7 @@ namespace UnityEngine.XR.iOS
 			Quaternion targetRot = camTrans.rotation * Quaternion.Euler(0, 180.0f, 0);
 
 			if (m_selected)
-			{
-				var fwd = camTrans.forward.normalized;
-				var up = camTrans.up;
-				target = camTrans.position + fwd * SelectedOffset.z + up * SelectedOffset.y;
-			}
+				target = GetSelectedPosition();
 			else
 				target = m_position;
 
@@ -125,10 +156,17 @@ namespace UnityEngine.XR.iOS
 			{
 				if (m_selected && (transform.position - target).sqrMagnitude < 0.0001f)
 				{
-					transform.SetParent(camTrans);
-					transform.localRotation = Quaternion.Euler(0, 180.0f, 0);
+					ForceToSelectedView();
 				}
 			}
+		}
+
+		Vector3 GetSelectedPosition()
+		{
+			var camTrans = Camera.main.transform;
+			var fwd = camTrans.forward.normalized;
+			var up = camTrans.up;
+			return camTrans.position + fwd * SelectedOffset.z + up * SelectedOffset.y;
 		}
 	}
 }

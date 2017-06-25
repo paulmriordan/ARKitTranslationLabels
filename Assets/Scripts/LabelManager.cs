@@ -11,6 +11,8 @@ namespace UnityEngine.XR.iOS
 		public ArLabel AddLabel(Vector3 pos, Quaternion rot)
 		{
 			var item = GameObject.Instantiate(LabelPrefab, pos, rot, transform).GetComponent<ArLabel>();
+			item.IsNew = true;
+			item.ForceToSelectedView();
 			InputManager.Instance.SelectItem(item.GetComponent<ISelectable>());
 			return item;
 		}

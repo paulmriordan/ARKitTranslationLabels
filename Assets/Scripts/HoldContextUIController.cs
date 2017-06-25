@@ -6,7 +6,7 @@ namespace UnityEngine.XR.iOS
 {
 	public interface IHoldActivatedUI
 	{
-		void HoldBegun(Vector3 pos, Quaternion rot);
+		void ShowRequest(Vector3 pos, Quaternion rot);
 		void Remove();
 		bool IsActive {get;}
 	}
@@ -26,7 +26,7 @@ namespace UnityEngine.XR.iOS
 			InputManager.Instance.RegisterHoldActivatedUI(this);
 		}
 
-		public void HoldBegun(Vector3 pos, Quaternion rot)
+		public void ShowRequest(Vector3 pos, Quaternion rot)
 		{
 			m_heldStartTime = Time.time;
 			transform.position = pos;
