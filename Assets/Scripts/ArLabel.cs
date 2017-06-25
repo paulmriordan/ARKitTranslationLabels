@@ -33,6 +33,7 @@ namespace UnityEngine.XR.iOS
 
 		public Image Image;
 		public InputField m_InputField;
+		public Transform m_FrameMesh;
 		public Color SelectedColor = Color.blue;
 		public Color UnSelectedColor = Color.white;
 		public float SmoothPosTime = 0.2f;
@@ -48,6 +49,7 @@ namespace UnityEngine.XR.iOS
 		private LookAtTarget m_lookAtTarget;
 		private float m_selectedTime = float.MaxValue;
 		private Dictionary<string, string> m_translations = new Dictionary<string, string>();
+		private List<MeshRenderer> m_frameMeshes = new List<MeshRenderer>();
 
 		public bool IsNew {get; set;}
 
@@ -57,6 +59,16 @@ namespace UnityEngine.XR.iOS
 			m_position = m_gObj.transform.position;
 			m_lookAtTarget = GetComponent<LookAtTarget>();
 			m_InputField.onEndEdit.AddListener(EditingEnded);
+
+			Material m = null;
+			for (int i = 0; i < m_FrameMesh.childCount; i++)
+			{
+				var mr = m_FrameMesh.GetChild(i).GetComponent<MeshRenderer>();
+				if (i == 0)
+					m = new Material(mr.material);
+				mr.material = m;
+				m_frameMeshes.Add(mr);
+			}
 		}
 
 		public GameObject GetGameObject() 
@@ -66,7 +78,8 @@ namespace UnityEngine.XR.iOS
 
 		public void Select()
 		{
-			Image.color = SelectedColor;
+			for (int i = 0; i < m_frameMeshes.Count; i++)
+				m_frameMeshes[i].sharedMaterial.color = SelectedColor;
 			m_selected = true;
 			m_lookAtTarget.enabled = false; // animation takes over
 			m_lookAtTarget.SetTargetOffset(new Vector3(SelectedOffset.x, SelectedOffset.y, 0));
@@ -78,7 +91,7 @@ namespace UnityEngine.XR.iOS
 			transform.SetParent(LabelManager.Instance.transform); //anim in world
 			m_lookAtTarget.enabled = true; // no longer fixed towards camera
 			m_lookAtTarget.SetTargetOffset(Vector3.zero);
-			Image.color = UnSelectedColor;
+			m_frameMeshes[0].sharedMaterial.color = UnSelectedColor;
 			m_selected = false;
 			m_selectedTime = float.MaxValue;
 			IsNew = false; //no longer just created, finish edit no longer goes to position

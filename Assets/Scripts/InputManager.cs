@@ -142,13 +142,15 @@ namespace UnityEngine.XR.iOS
 			if (Physics.Raycast(Camera.main.ScreenPointToRay(Input.mousePosition), out hitInfo, 1000.0f))
 			{
 				var selectable = hitInfo.collider.gameObject.GetComponent<ISelectable>();
-				if (m_SelectedObject == selectable)
+				if (m_SelectedObject == selectable && !m_SelectedObject.IsNew)
 					SelectItem(null);
 				else
 					SelectItem(selectable);
 			}
 			else
 			{
+				if (m_SelectedObject != null && m_SelectedObject.IsNew)
+					LabelManager.Instance.RemoveLabel(m_SelectedObject.GetGameObject());
 				SelectItem(null);
 				if (WorldUIInFrontOfCam)
 					ShowWorldUIInFrontOfCamera();
