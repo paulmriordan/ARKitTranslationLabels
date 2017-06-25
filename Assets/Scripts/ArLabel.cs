@@ -145,8 +145,7 @@ namespace UnityEngine.XR.iOS
 			if (!m_InputField.wasCanceled)
 			{
 				m_translations["en"] = userInput;
-				//TODO: should request new translation here
-				UpdateActiveTranslation();
+				LabelManager.Instance.TranslateAll(ContextMenuController.GetActiveLanguageCode());
 
 				if (IsNew)
 					OnNewItemEditEnded();

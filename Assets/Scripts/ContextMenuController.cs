@@ -38,6 +38,7 @@ namespace UnityEngine.XR.iOS
 			ArLabel.OnNewItemEditEnded += () => {ChangeState(E_State.Positioning);};
 			m_UIEvents.OnItemMoveRequested += () => {ChangeState(E_State.Positioning);};
 			m_UIEvents.OnItemMoveFinished += () => {ChangeState(E_State.Selected);};
+			ChangeState(E_State.Unselected);
 		}
 
 		public void ToggleLanguage()
